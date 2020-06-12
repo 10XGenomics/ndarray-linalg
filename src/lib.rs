@@ -7,6 +7,7 @@
 //! - Decomposition methods:
 //!     - [QR decomposition](qr/index.html)
 //!     - [Cholesky/LU decomposition](cholesky/index.html)
+//!     - [Eigenvalue decomposition](eig/index.html)
 //!     - [Eigenvalue decomposition for Hermite matrices](eigh/index.html)
 //!     - [**S**ingular **V**alue **D**ecomposition](svd/index.html)
 //! - Solution of linear systems:
@@ -36,6 +37,9 @@
 //!  - [Random matrix generators](generate/index.html)
 //!  - [Scalar trait](types/trait.Scalar.html)
 
+#[macro_use]
+extern crate ndarray;
+
 extern crate blas_src;
 extern crate lapack_src;
 
@@ -43,6 +47,7 @@ pub mod assert;
 pub mod cholesky;
 pub mod convert;
 pub mod diagonal;
+pub mod eig;
 pub mod eigh;
 pub mod error;
 pub mod generate;
@@ -50,6 +55,7 @@ pub mod inner;
 pub mod krylov;
 pub mod lapack;
 pub mod layout;
+pub mod lobpcg;
 pub mod norm;
 pub mod operator;
 pub mod opnorm;
@@ -66,10 +72,12 @@ pub use assert::*;
 pub use cholesky::*;
 pub use convert::*;
 pub use diagonal::*;
+pub use eig::*;
 pub use eigh::*;
 pub use generate::*;
 pub use inner::*;
 pub use layout::*;
+pub use lobpcg::{TruncatedEig, TruncatedOrder, TruncatedSvd};
 pub use norm::*;
 pub use operator::*;
 pub use opnorm::*;

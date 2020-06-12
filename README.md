@@ -2,7 +2,6 @@ ndarray-linalg
 ===============
 [![Crate](http://meritbadge.herokuapp.com/ndarray-linalg)](https://crates.io/crates/ndarray-linalg)
 [![docs.rs](https://docs.rs/ndarray-linalg/badge.svg)](https://docs.rs/ndarray-linalg)
-[![Build Status](https://dev.azure.com/rust-ndarray/ndarray-linalg/_apis/build/status/rust-ndarray.ndarray-linalg?branchName=master)](https://dev.azure.com/rust-ndarray/ndarray-linalg/_build/latest?definitionId=1&branchName=master)
 
 Linear algebra package for Rust with [ndarray](https://github.com/bluss/ndarray) based on external LAPACK implementations.
 
@@ -38,8 +37,8 @@ There are three features corresponding to the backend implementations (`openblas
 
 ```toml
 [dependencies]
-ndarray = "0.12"
-ndarray-linalg = { version = "0.11", features = ["openblas"] }
+ndarray = "0.13"
+ndarray-linalg = { version = "0.12", features = ["openblas"] }
 ```
 
 ### Tested Environments
@@ -55,8 +54,8 @@ If you creating a library depending on this crate, we encourage you not to link 
 
 ```toml
 [dependencies]
-ndarray = "0.12"
-ndarray-linalg = "0.11"
+ndarray = "0.13"
+ndarray-linalg = "0.12"
 ```
 
 ### Link backend crate manually
@@ -65,8 +64,8 @@ You should link a LAPACKE implementation to a final crate (like binary executabl
 
 ```toml
 [dependencies]
-ndarray = "0.12"
-ndarray-linalg = "0.11"
+ndarray = "0.13"
+ndarray-linalg = "0.12"
 openblas-src = "0.7" # or another backend of your choice
 
 ```

@@ -38,7 +38,7 @@ where
         assert!(ortho.tolerance() < One::one());
         // normalize before append because |v| may be smaller than ortho.tolerance()
         let norm = v.norm_l2();
-        azip!(mut v(&mut v) in { *v = v.div_real(norm) });
+        azip!((v in &mut v)  *v = v.div_real(norm));
         ortho.append(v.view());
         Arnoldi {
             a,
@@ -82,7 +82,7 @@ where
         self.a.apply_mut(&mut self.v);
         let result = self.ortho.div_append(&mut self.v);
         let norm = self.v.norm_l2();
-        azip!(mut v(&mut self.v) in { *v = v.div_real(norm) });
+        azip!((v in &mut self.v) *v = v.div_real(norm));
         match result {
             AppendResult::Added(coef) => {
                 self.h.push(coef.clone());
@@ -97,7 +97,11 @@ where
 }
 
 /// Utility to execute Arnoldi iteration with Householder reflection
-pub fn arnoldi_householder<A, S>(a: impl LinearOperator<Elem = A>, v: ArrayBase<S, Ix1>, tol: A::Real) -> (Q<A>, H<A>)
+pub fn arnoldi_householder<A, S>(
+    a: impl LinearOperator<Elem = A>,
+    v: ArrayBase<S, Ix1>,
+    tol: A::Real,
+) -> (Q<A>, H<A>)
 where
     A: Scalar + Lapack,
     S: DataMut<Elem = A>,
@@ -107,7 +111,11 @@ where
 }
 
 /// Utility to execute Arnoldi iteration with modified Gram-Schmit orthogonalizer
-pub fn arnoldi_mgs<A, S>(a: impl LinearOperator<Elem = A>, v: ArrayBase<S, Ix1>, tol: A::Real) -> (Q<A>, H<A>)
+pub fn arnoldi_mgs<A, S>(
+    a: impl LinearOperator<Elem = A>,
+    v: ArrayBase<S, Ix1>,
+    tol: A::Real,
+) -> (Q<A>, H<A>)
 where
     A: Scalar + Lapack,
     S: DataMut<Elem = A>,

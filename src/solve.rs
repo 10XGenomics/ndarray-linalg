@@ -84,7 +84,10 @@ pub trait Solve<A: Scalar> {
     }
     /// Solves a system of linear equations `A * x = b` where `A` is `self`, `b`
     /// is the argument, and `x` is the successful result.
-    fn solve_into<S: DataMut<Elem = A>>(&self, mut b: ArrayBase<S, Ix1>) -> Result<ArrayBase<S, Ix1>> {
+    fn solve_into<S: DataMut<Elem = A>>(
+        &self,
+        mut b: ArrayBase<S, Ix1>,
+    ) -> Result<ArrayBase<S, Ix1>> {
         self.solve_inplace(&mut b)?;
         Ok(b)
     }
@@ -104,7 +107,10 @@ pub trait Solve<A: Scalar> {
     }
     /// Solves a system of linear equations `A^T * x = b` where `A` is `self`, `b`
     /// is the argument, and `x` is the successful result.
-    fn solve_t_into<S: DataMut<Elem = A>>(&self, mut b: ArrayBase<S, Ix1>) -> Result<ArrayBase<S, Ix1>> {
+    fn solve_t_into<S: DataMut<Elem = A>>(
+        &self,
+        mut b: ArrayBase<S, Ix1>,
+    ) -> Result<ArrayBase<S, Ix1>> {
         self.solve_t_inplace(&mut b)?;
         Ok(b)
     }
@@ -124,7 +130,10 @@ pub trait Solve<A: Scalar> {
     }
     /// Solves a system of linear equations `A^H * x = b` where `A` is `self`, `b`
     /// is the argument, and `x` is the successful result.
-    fn solve_h_into<S: DataMut<Elem = A>>(&self, mut b: ArrayBase<S, Ix1>) -> Result<ArrayBase<S, Ix1>> {
+    fn solve_h_into<S: DataMut<Elem = A>>(
+        &self,
+        mut b: ArrayBase<S, Ix1>,
+    ) -> Result<ArrayBase<S, Ix1>> {
         self.solve_h_inplace(&mut b)?;
         Ok(b)
     }
@@ -137,7 +146,8 @@ pub trait Solve<A: Scalar> {
 }
 
 /// Represents the LU factorization of a matrix `A` as `A = P*L*U`.
-pub struct LUFactorized<S: Data> {
+#[derive(Clone)]
+pub struct LUFactorized<S: Data + RawDataClone> {
     /// The factors `L` and `U`; the unit diagonal elements of `L` are not
     /// stored.
     pub a: ArrayBase<S, Ix2>,
@@ -148,9 +158,12 @@ pub struct LUFactorized<S: Data> {
 impl<A, S> Solve<A> for LUFactorized<S>
 where
     A: Scalar + Lapack,
-    S: Data<Elem = A>,
+    S: Data<Elem = A> + RawDataClone,
 {
-    fn solve_inplace<'a, Sb>(&self, rhs: &'a mut ArrayBase<Sb, Ix1>) -> Result<&'a mut ArrayBase<Sb, Ix1>>
+    fn solve_inplace<'a, Sb>(
+        &self,
+        rhs: &'a mut ArrayBase<Sb, Ix1>,
+    ) -> Result<&'a mut ArrayBase<Sb, Ix1>>
     where
         Sb: DataMut<Elem = A>,
     {
@@ -165,7 +178,10 @@ where
         };
         Ok(rhs)
     }
-    fn solve_t_inplace<'a, Sb>(&self, rhs: &'a mut ArrayBase<Sb, Ix1>) -> Result<&'a mut ArrayBase<Sb, Ix1>>
+    fn solve_t_inplace<'a, Sb>(
+        &self,
+        rhs: &'a mut ArrayBase<Sb, Ix1>,
+    ) -> Result<&'a mut ArrayBase<Sb, Ix1>>
     where
         Sb: DataMut<Elem = A>,
     {
@@ -180,7 +196,10 @@ where
         };
         Ok(rhs)
     }
-    fn solve_h_inplace<'a, Sb>(&self, rhs: &'a mut ArrayBase<Sb, Ix1>) -> Result<&'a mut ArrayBase<Sb, Ix1>>
+    fn solve_h_inplace<'a, Sb>(
+        &self,
+        rhs: &'a mut ArrayBase<Sb, Ix1>,
+    ) -> Result<&'a mut ArrayBase<Sb, Ix1>>
     where
         Sb: DataMut<Elem = A>,
     {
@@ -202,21 +221,30 @@ where
     A: Scalar + Lapack,
     S: Data<Elem = A>,
 {
-    fn solve_inplace<'a, Sb>(&self, rhs: &'a mut ArrayBase<Sb, Ix1>) -> Result<&'a mut ArrayBase<Sb, Ix1>>
+    fn solve_inplace<'a, Sb>(
+        &self,
+        rhs: &'a mut ArrayBase<Sb, Ix1>,
+    ) -> Result<&'a mut ArrayBase<Sb, Ix1>>
     where
         Sb: DataMut<Elem = A>,
     {
         let f = self.factorize()?;
         f.solve_inplace(rhs)
     }
-    fn solve_t_inplace<'a, Sb>(&self, rhs: &'a mut ArrayBase<Sb, Ix1>) -> Result<&'a mut ArrayBase<Sb, Ix1>>
+    fn solve_t_inplace<'a, Sb>(
+        &self,
+        rhs: &'a mut ArrayBase<Sb, Ix1>,
+    ) -> Result<&'a mut ArrayBase<Sb, Ix1>>
     where
         Sb: DataMut<Elem = A>,
     {
         let f = self.factorize()?;
         f.solve_t_inplace(rhs)
     }
-    fn solve_h_inplace<'a, Sb>(&self, rhs: &'a mut ArrayBase<Sb, Ix1>) -> Result<&'a mut ArrayBase<Sb, Ix1>>
+    fn solve_h_inplace<'a, Sb>(
+        &self,
+        rhs: &'a mut ArrayBase<Sb, Ix1>,
+    ) -> Result<&'a mut ArrayBase<Sb, Ix1>>
     where
         Sb: DataMut<Elem = A>,
     {
@@ -226,14 +254,14 @@ where
 }
 
 /// An interface for computing LU factorizations of matrix refs.
-pub trait Factorize<S: Data> {
+pub trait Factorize<S: Data + RawDataClone> {
     /// Computes the LU factorization `A = P*L*U`, where `P` is a permutation
     /// matrix.
     fn factorize(&self) -> Result<LUFactorized<S>>;
 }
 
 /// An interface for computing LU factorizations of matrices.
-pub trait FactorizeInto<S: Data> {
+pub trait FactorizeInto<S: Data + RawDataClone> {
     /// Computes the LU factorization `A = P*L*U`, where `P` is a permutation
     /// matrix.
     fn factorize_into(self) -> Result<LUFactorized<S>>;
@@ -242,11 +270,14 @@ pub trait FactorizeInto<S: Data> {
 impl<A, S> FactorizeInto<S> for ArrayBase<S, Ix2>
 where
     A: Scalar + Lapack,
-    S: DataMut<Elem = A>,
+    S: DataMut<Elem = A> + RawDataClone,
 {
     fn factorize_into(mut self) -> Result<LUFactorized<S>> {
         let ipiv = unsafe { A::lu(self.layout()?, self.as_allocated_mut()?)? };
-        Ok(LUFactorized { a: self, ipiv: ipiv })
+        Ok(LUFactorized {
+            a: self,
+            ipiv: ipiv,
+        })
     }
 }
 
@@ -279,12 +310,18 @@ pub trait InverseInto {
 impl<A, S> InverseInto for LUFactorized<S>
 where
     A: Scalar + Lapack,
-    S: DataMut<Elem = A>,
+    S: DataMut<Elem = A> + RawDataClone,
 {
     type Output = ArrayBase<S, Ix2>;
 
     fn inv_into(mut self) -> Result<ArrayBase<S, Ix2>> {
-        unsafe { A::inv(self.a.square_layout()?, self.a.as_allocated_mut()?, &self.ipiv)? };
+        unsafe {
+            A::inv(
+                self.a.square_layout()?,
+                self.a.as_allocated_mut()?,
+                &self.ipiv,
+            )?
+        };
         Ok(self.a)
     }
 }
@@ -292,7 +329,7 @@ where
 impl<A, S> Inverse for LUFactorized<S>
 where
     A: Scalar + Lapack,
-    S: Data<Elem = A>,
+    S: Data<Elem = A> + RawDataClone,
 {
     type Output = Array2<A>;
 
@@ -308,7 +345,7 @@ where
 impl<A, S> InverseInto for ArrayBase<S, Ix2>
 where
     A: Scalar + Lapack,
-    S: DataMut<Elem = A>,
+    S: DataMut<Elem = A> + RawDataClone,
 {
     type Output = Self;
 
@@ -398,17 +435,23 @@ where
     } else {
         -A::one()
     };
-    let (upper_sign, ln_det) = u_diag_iter.fold((A::one(), A::Real::zero()), |(upper_sign, ln_det), &elem| {
-        let abs_elem: A::Real = elem.abs();
-        (upper_sign * elem / A::from_real(abs_elem), ln_det + abs_elem.ln())
-    });
+    let (upper_sign, ln_det) = u_diag_iter.fold(
+        (A::one(), A::Real::zero()),
+        |(upper_sign, ln_det), &elem| {
+            let abs_elem: A::Real = elem.abs();
+            (
+                upper_sign * elem / A::from_real(abs_elem),
+                ln_det + abs_elem.ln(),
+            )
+        },
+    );
     (pivot_sign * upper_sign, ln_det)
 }
 
 impl<A, S> Determinant<A> for LUFactorized<S>
 where
     A: Scalar + Lapack,
-    S: Data<Elem = A>,
+    S: Data<Elem = A> + RawDataClone,
 {
     fn sln_det(&self) -> Result<(A, A::Real)> {
         self.a.ensure_square()?;
@@ -419,7 +462,7 @@ where
 impl<A, S> DeterminantInto<A> for LUFactorized<S>
 where
     A: Scalar + Lapack,
-    S: Data<Elem = A>,
+    S: Data<Elem = A> + RawDataClone,
 {
     fn sln_det_into(self) -> Result<(A, A::Real)> {
         self.a.ensure_square()?;
@@ -448,7 +491,7 @@ where
 impl<A, S> DeterminantInto<A> for ArrayBase<S, Ix2>
 where
     A: Scalar + Lapack,
-    S: DataMut<Elem = A>,
+    S: DataMut<Elem = A> + RawDataClone,
 {
     fn sln_det_into(self) -> Result<(A, A::Real)> {
         self.ensure_square()?;
@@ -494,17 +537,23 @@ pub trait ReciprocalConditionNumInto<A: Scalar> {
 impl<A, S> ReciprocalConditionNum<A> for LUFactorized<S>
 where
     A: Scalar + Lapack,
-    S: Data<Elem = A>,
+    S: Data<Elem = A> + RawDataClone,
 {
     fn rcond(&self) -> Result<A::Real> {
-        unsafe { A::rcond(self.a.layout()?, self.a.as_allocated()?, self.a.opnorm_one()?) }
+        unsafe {
+            A::rcond(
+                self.a.layout()?,
+                self.a.as_allocated()?,
+                self.a.opnorm_one()?,
+            )
+        }
     }
 }
 
 impl<A, S> ReciprocalConditionNumInto<A> for LUFactorized<S>
 where
     A: Scalar + Lapack,
-    S: Data<Elem = A>,
+    S: Data<Elem = A> + RawDataClone,
 {
     fn rcond_into(self) -> Result<A::Real> {
         self.rcond()
@@ -524,7 +573,7 @@ where
 impl<A, S> ReciprocalConditionNumInto<A> for ArrayBase<S, Ix2>
 where
     A: Scalar + Lapack,
-    S: DataMut<Elem = A>,
+    S: DataMut<Elem = A> + RawDataClone,
 {
     fn rcond_into(self) -> Result<A::Real> {
         self.factorize_into()?.rcond_into()
